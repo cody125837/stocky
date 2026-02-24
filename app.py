@@ -141,7 +141,7 @@ with tab1:
                 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
                 st.markdown("### 🌡️ 市場情緒溫度計 (RSI 指標)")
-                st.caption("點擊圖表可查看準確數值。黃線為危險超買區，綠線為超值超賣區。")
+                st.caption("點擊圖表可查看準確數值。紅線為危險超買區，綠線為超值超賣區。")
                 
                 fig_rsi = go.Figure()
                 fig_rsi.add_trace(go.Scatter(x=df.index, y=df['RSI'], line=dict(color='#AB47BC', width=2.5), name='RSI 溫度', hovertemplate='RSI: %{y:.1f}'))
@@ -331,4 +331,5 @@ with tab3:
             dragmode=False # 🛑 核心優化
         )
         st.plotly_chart(fig_retire, use_container_width=True, config={'displayModeBar': False}) # 🛑 核心優化
+
 
