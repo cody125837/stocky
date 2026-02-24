@@ -6,7 +6,7 @@ import urllib3
 import plotly.graph_objects as go
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-st.set_page_config(page_title="家庭專屬理財助手", page_icon="💖", layout="wide")
+st.set_page_config(page_title="家庭專屬理財助手", page_icon="💡", layout="wide")
 
 # ==========================================
 # 🎨 專屬 UI/UX 美化 CSS (深色模式優化版)
@@ -68,7 +68,6 @@ with tab1:
                 df = yf.Ticker(f"{stock_id}.TWO").history(period="6mo")
                 
             if not df.empty:
-                # 🌟 新增：計算更多常用的均線 (5MA周線、60MA季線)
                 df['5MA'] = df['Close'].rolling(window=5).mean()
                 df['20MA'] = df['Close'].rolling(window=20).mean()
                 df['60MA'] = df['Close'].rolling(window=60).mean()
@@ -123,32 +122,29 @@ with tab1:
                 st.markdown("### 📉 股價走勢與安全通道 (布林通道)")
                 
                 fig = go.Figure()
-                
-                # 繪製布林通道安全區塊
                 fig.add_trace(go.Scatter(x=df.index, y=df['布林上軌'], line=dict(color='rgba(255,255,255,0)'), hoverinfo='skip', showlegend=False))
                 fig.add_trace(go.Scatter(x=df.index, y=df['布林下軌'], fill='tonexty', fillcolor='rgba(255, 255, 255, 0.1)', line=dict(color='rgba(255,255,255,0)'), name='安全通道邊界', hovertemplate='%{y:.2f}'))
-                
-                # 🌟 繪製各種均線，並加上 hovertemplate 讓提示框超清楚
-                fig.add_trace(go.Scatter(x=df.index, y=df['60MA'], line=dict(color='#9CCC65', width=2, dash='dash'), name='60MA (季線大趨勢)', hovertemplate='%{y:.2f}'))
-                fig.add_trace(go.Scatter(x=df.index, y=df['20MA'], line=dict(color='#FFCA28', width=2, dash='dot'), name='20MA (月線生命線)', hovertemplate='%{y:.2f}'))
-                fig.add_trace(go.Scatter(x=df.index, y=df['5MA'], line=dict(color='#EF5350', width=1.5), name='5MA (周線短趨勢)', hovertemplate='%{y:.2f}'))
+                fig.add_trace(go.Scatter(x=df.index, y=df['60MA'], line=dict(color='#9CCC65', width=2, dash='dash'), name='60MA (季線)', hovertemplate='%{y:.2f}'))
+                fig.add_trace(go.Scatter(x=df.index, y=df['20MA'], line=dict(color='#FFCA28', width=2, dash='dot'), name='20MA (月線)', hovertemplate='%{y:.2f}'))
+                fig.add_trace(go.Scatter(x=df.index, y=df['5MA'], line=dict(color='#EF5350', width=1.5), name='5MA (周線)', hovertemplate='%{y:.2f}'))
                 fig.add_trace(go.Scatter(x=df.index, y=df['Close'], line=dict(color='#42A5F5', width=3), name='當日收盤價', hovertemplate='%{y:.2f}'))
 
                 fig.update_layout(
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
-                    hovermode='x unified', # 🌟 核心：滑鼠移過去會出現一條垂直線，並列出所有數據
+                    hovermode='x unified', 
                     margin=dict(l=0, r=0, t=10, b=0),
-                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                    dragmode=False # 🛑 核心優化：禁止手機拖曳縮放，讓網頁可以順暢上下滑動
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                # 🛑 核心優化：隱藏右上角的複雜工具列 (displayModeBar: False)
+                st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
                 st.markdown("### 🌡️ 市場情緒溫度計 (RSI 指標)")
-                st.caption("滑鼠移到圖表上可查看準確數值。黃線為危險超買區，綠線為超值超賣區。")
+                st.caption("點擊圖表可查看準確數值。黃線為危險超買區，綠線為超值超賣區。")
                 
                 fig_rsi = go.Figure()
                 fig_rsi.add_trace(go.Scatter(x=df.index, y=df['RSI'], line=dict(color='#AB47BC', width=2.5), name='RSI 溫度', hovertemplate='RSI: %{y:.1f}'))
-                # 🌟 加入判斷基準線
                 fig_rsi.add_hline(y=70, line_dash="dot", line_color="#EF5350", annotation_text="危險超買區 (70)", annotation_position="top left", annotation_font_color="#EF5350")
                 fig_rsi.add_hline(y=30, line_dash="dot", line_color="#81C784", annotation_text="超值超賣區 (30)", annotation_position="bottom left", annotation_font_color="#81C784")
                 
@@ -158,9 +154,10 @@ with tab1:
                     plot_bgcolor='rgba(0,0,0,0)',
                     margin=dict(l=0, r=0, t=10, b=0),
                     yaxis=dict(range=[0, 100]),
-                    showlegend=False
+                    showlegend=False,
+                    dragmode=False # 🛑 核心優化
                 )
-                st.plotly_chart(fig_rsi, use_container_width=True)
+                st.plotly_chart(fig_rsi, use_container_width=True, config={'displayModeBar': False})
 
             else:
                 st.error("❌ 找不到該股票代號！請確認代號是否輸入正確。")
@@ -321,7 +318,6 @@ with tab3:
         st.write("")
         st.markdown("#### 📈 財富雪球成長曲線圖")
         
-        # 🌟 第三頁圖表也升級成 Plotly，滑鼠移過去會顯示加上千分位的精準金額！
         fig_retire = go.Figure()
         fig_retire.add_trace(go.Scatter(x=df_calc.index, y=df_calc['投入總本金'], fill='tozeroy', mode='lines', line=dict(color='#42A5F5', width=2), name='投入總本金', hovertemplate='本金: %{y:,.0f} 元'))
         fig_retire.add_trace(go.Scatter(x=df_calc.index, y=df_calc['股票總市值 (含複利)'], fill='tonexty', mode='lines', line=dict(color='#EF5350', width=2), name='總市值(含複利)', hovertemplate='市值: %{y:,.0f} 元'))
@@ -331,6 +327,7 @@ with tab3:
             plot_bgcolor='rgba(0,0,0,0)',
             margin=dict(l=0, r=0, t=10, b=0),
             xaxis=dict(title="存股第幾年"),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            dragmode=False # 🛑 核心優化
         )
-        st.plotly_chart(fig_retire, use_container_width=True)
+        st.plotly_chart(fig_retire, use_container_width=True, config={'displayModeBar': False}) # 🛑 核心優化
