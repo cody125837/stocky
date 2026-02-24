@@ -46,7 +46,7 @@ st.markdown("""
 
 # ==========================================
 
-st.markdown("<h1 style='text-align: center; color: #EF5350;'>💖 家庭專屬理財與存股小幫手</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #EF5350;'>💡 家庭專屬理財與存股小幫手</h1>", unsafe_allow_html=True)
 st.markdown("<h4 style='text-align: center; color: #BDBDBD; margin-bottom: 30px;'>投資理財穩穩賺，讓時間陪我們慢慢變富 ✨</h4>", unsafe_allow_html=True)
 
 tab1, tab2, tab3 = st.tabs(["🔍 個股健康檢查", "🔥 今日市場熱點", "💰 真實存股計算機"])
@@ -331,3 +331,4 @@ with tab3:
             dragmode=False # 🛑 核心優化
         )
         st.plotly_chart(fig_retire, use_container_width=True, config={'displayModeBar': False}) # 🛑 核心優化
+
